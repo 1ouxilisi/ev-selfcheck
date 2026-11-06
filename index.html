@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>新能源车故障自查 · 不用注册</title>
+<style>
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: #f4f6f8; color: #1b2733;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-size: 16px; line-height: 1.7;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px 56px; }
+
+  header { background: #0f4c75; color: #fff; padding: 30px 0 26px; margin-bottom: 22px; }
+  header .wrap { padding-bottom: 0; }
+  header h1 { font-size: 23px; margin: 0 0 8px; letter-spacing: .5px; }
+  header p { margin: 0; font-size: 14px; color: #cfe2ee; line-height: 1.6; }
+  header .badge {
+    display: inline-block; margin-top: 12px; font-size: 13px;
+    background: rgba(255,255,255,.16); border-radius: 4px; padding: 4px 10px; color: #eaf3f9;
+  }
+
+  h2 { font-size: 17px; margin: 30px 0 12px; padding-left: 10px; border-left: 4px solid #0f4c75; }
+  h2 span { font-size: 13px; color: #6b7785; font-weight: normal; margin-left: 8px; }
+
+  details {
+    background: #fff; border-radius: 10px; margin-bottom: 10px;
+    box-shadow: 0 1px 4px rgba(15,76,117,.07); overflow: hidden;
+  }
+  details[open] { box-shadow: 0 3px 14px rgba(15,76,117,.13); }
+  summary {
+    padding: 15px 16px; font-size: 16px; font-weight: 600; cursor: pointer;
+    list-style: none; display: flex; align-items: center; justify-content: space-between;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: #0f4c75; font-size: 20px; font-weight: 400; line-height: 1; }
+  details[open] summary::after { content: "−"; }
+  .body { padding: 0 16px 16px; border-top: 1px solid #eef1f4; }
+
+  .label { font-size: 13px; font-weight: 700; color: #0f4c75; margin: 14px 0 6px; letter-spacing: .3px; }
+  .label.warn { color: #b5451b; }
+  ul { margin: 0; padding-left: 20px; }
+  li { margin-bottom: 5px; font-size: 15px; }
+  .tip {
+    background: #f2f7fb; border-left: 3px solid #0f4c75; padding: 10px 12px;
+    font-size: 14.5px; color: #24405a; margin-top: 12px; border-radius: 0 4px 4px 0;
+  }
+  .tip b { color: #0f4c75; }
+
+  .codes { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .code-btn {
+    border: 1px solid #cfdbe4; background: #fff; color: #24405a; border-radius: 6px;
+    padding: 8px 12px; font-size: 14px; cursor: pointer; font-family: inherit;
+  }
+  .code-btn:hover, .code-btn.on { background: #0f4c75; color: #fff; border-color: #0f4c75; }
+  .codeInput {
+    width: 100%; padding: 13px 14px; font-size: 16px; border: 1px solid #cfdbe4;
+    border-radius: 8px; background: #fff; font-family: inherit; text-transform: uppercase;
+  }
+  .codeInput:focus { outline: none; border-color: #0f4c75; box-shadow: 0 0 0 3px rgba(15,76,117,.12); }
+  #codeResult {
+    margin-top: 12px; background: #fff; border-radius: 10px; padding: 14px 16px;
+    box-shadow: 0 1px 4px rgba(15,76,117,.07); display: none;
+  }
+  #codeResult .r-code { font-size: 19px; font-weight: 700; color: #0f4c75; letter-spacing: .5px; }
+  #codeResult .r-row { margin-top: 8px; font-size: 15px; }
+  #codeResult .r-row em { font-style: normal; color: #6b7785; display: inline-block; width: 68px; }
+
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(15,76,117,.07); font-size: 14.5px; }
+  th, td { padding: 11px 10px; text-align: left; border-bottom: 1px solid #eef1f4; vertical-align: top; }
+  th { background: #eaf1f6; color: #0f4c75; font-size: 14px; font-weight: 700; }
+  td:first-child { font-weight: 600; white-space: nowrap; }
+
+  .quote-item { border-bottom: 1px solid #eef1f4; padding: 10px 0; }
+  .quote-item:last-child { border-bottom: 0; }
+  .quote-item b { color: #0f4c75; }
+
+  .talk { background: #fff; border-radius: 10px; padding: 6px 16px 14px; box-shadow: 0 1px 4px rgba(15,76,117,.07); }
+  .talk p { margin: 12px 0 0; font-size: 15px; }
+  .talk .q { color: #0f4c75; font-weight: 600; margin-right: 4px; }
+
+  .askInput { width: 100%; padding: 13px 14px; font-size: 16px; border: 1px solid #cfdbe4; border-radius: 8px; background: #fff; font-family: inherit; }
+  .askInput:focus { outline: none; border-color: #0f4c75; box-shadow: 0 0 0 3px rgba(15,76,117,.12); }
+  .askChips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+  .askChip { border: 1px solid #cfdbe4; background: #fff; color: #24405a; border-radius: 999px; padding: 6px 11px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .askChip:hover { background: #0f4c75; color: #fff; border-color: #0f4c75; }
+  #askResult { margin-top: 12px; background: #fff; border-radius: 10px; padding: 15px 16px; box-shadow: 0 1px 4px rgba(15,76,117,.07); display: none; }
+  #askResult .a-title { font-size: 16px; font-weight: 700; color: #0f4c75; margin-bottom: 8px; }
+  #askResult .a-body { font-size: 15px; }
+  #askResult .a-next { margin-top: 10px; font-size: 14px; color: #b5451b; }
+  .calcBox { display: flex; flex-wrap: wrap; gap: 8px; }
+  .calcSelect { flex: 2 1 200px; min-width: 0; padding: 12px; font-size: 15px; border: 1px solid #cfdbe4; border-radius: 8px; background: #fff; font-family: inherit; }
+  .calcInput { flex: 1 1 110px; min-width: 0; padding: 12px; font-size: 15px; border: 1px solid #cfdbe4; border-radius: 8px; background: #fff; font-family: inherit; }
+  .calcSelect:focus, .calcInput:focus { outline: none; border-color: #0f4c75; }
+  .calcBtn { flex: 0 0 auto; padding: 12px 18px; font-size: 15px; border: 0; border-radius: 8px; background: #0f4c75; color: #fff; cursor: pointer; font-family: inherit; }
+  .calcBtn:hover { background: #0b3a5a; }
+  #calcResult { margin-top: 12px; background: #fff; border-radius: 10px; padding: 15px 16px; box-shadow: 0 1px 4px rgba(15,76,117,.07); display: none; font-size: 15px; }
+
+  footer { margin-top: 34px; font-size: 13px; color: #6b7785; line-height: 1.8; border-top: 1px solid #e2e8ee; padding-top: 16px; }
+  footer b { color: #24405a; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>新能源车故障自查</h1>
+    <p>仪表亮灯、充不进电、续航掉了、报价看不懂——先在这里自己过一遍。</p>
+    <div class="badge">不用注册 · 不用登录 · 打开就能用</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <h2>直接问：一句话说你遇到什么<span>页面自己匹配，不用联网</span></h2>
+  <input class="askInput" id="askInput" placeholder="例如：续航掉了 30% 正常吗 / 报 1.8 万换电池包贵不贵" autocomplete="off">
+  <div class="askChips" id="askChips"></div>
+  <div id="askResult"></div>
+
+  <h2>报价算一算：这个数在不在谱上<span>选项目 + 填金额</span></h2>
+  <div class="calcBox">
+    <select id="calcItem" class="calcSelect"></select>
+    <input id="calcPrice" class="calcInput" type="number" placeholder="对方报的金额（元）">
+    <button id="calcBtn" class="calcBtn">判断</button>
+  </div>
+  <div id="calcResult"></div>
+
+  <h2>或者按现象自查<span>六种最常见</span></h2>
+
+  <details open>
+    <summary>上不了电 / READY 灯不亮</summary>
+    <div class="body">
+      <div class="label">先做这些（零风险，5 分钟）</div>
+      <ul>
+        <li>钥匙在车内、钥匙电量正常（可贴近感应区试一次）</li>
+        <li>挡位在 P 挡；充电枪是否还插着（部分车型插枪禁止走车）</li>
+        <li>锁车，等 3-5 分钟再解锁上电，让系统重启</li>
+        <li>车机不亮、门锁迟钝、仪表乱闪 —— 优先怀疑 12V 小电瓶</li>
+        <li>车门、前备箱、后备箱是否关好（会触发高压互锁保护）</li>
+      </ul>
+      <div class="label warn">以上都正常，仍然上不了高压，可能是</div>
+      <ul>
+        <li>绝缘故障（高压漏电，涉水后常见）</li>
+        <li>高压互锁（HVIL）回路未闭合</li>
+        <li>预充回路、主接触器故障</li>
+        <li>BMS / VCU 故障</li>
+      </ul>
+      <div class="tip"><b>这些必须送修，不要反复尝试上电</b>，反复上电可能扩大故障范围。</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>充不进电 / 充电特别慢</summary>
+    <div class="body">
+      <div class="label">先排除外部原因（占大多数）</div>
+      <ul>
+        <li>充电枪插到底、电子锁是否锁止</li>
+        <li>公共快充高峰会被分流，慢属于正常</li>
+        <li>电池温度：过冷先预热再限流，过热也限流</li>
+        <li>SOC 高时快充功率本来就低（80% 以后明显变慢是保护策略）</li>
+        <li>慢充不充：查插座有没有接地（部分车型无接地直接拒绝充电）</li>
+        <li>换一个桩再试，排除桩的问题</li>
+        <li>800V 车型在普通桩上跑不到峰值，是桩和车共同限制</li>
+      </ul>
+      <div class="label warn">可能是硬件（需送修）</div>
+      <ul>
+        <li>OBC 车载充电机故障（慢充失效最常见）</li>
+        <li>充电口温度传感器、CC/CP 信号异常</li>
+        <li>BMS 充电策略故障</li>
+        <li>快充回路、高压接触器问题</li>
+      </ul>
+      <div class="tip"><b>判断技巧：</b>慢充不行、快充正常 → 大概率是 OBC；快充不行、慢充正常 → 大概率是快充回路或桩的问题。</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>续航突然下降</summary>
+    <div class="body">
+      <div class="label">先排除正常因素</div>
+      <ul>
+        <li>气温：冬季电池活性下降，续航打折，回暖恢复</li>
+        <li>空调、暖风、座椅加热频繁使用</li>
+        <li>胎压偏低、制动拖滞、四轮定位异常</li>
+        <li>驾驶模式变化、能量回收等级调低</li>
+        <li>频繁急加速、长时间高速</li>
+        <li>表显口径切换（动态续航 / CLTC 固定续航差别很大）</li>
+        <li>停放开了哨兵模式、电池预热保温，会持续掉电</li>
+      </ul>
+      <div class="label warn">需要关注的情况</div>
+      <ul>
+        <li>满电续航比新车时<b>持续、明显</b>下降（不是偶发）</li>
+        <li>到店读 SOH：缓慢下降是正常老化，低于厂家质保阈值可申请检测</li>
+        <li>电芯压差过大（一致性差）也会让可用容量变少，需要诊断仪读</li>
+      </ul>
+      <div class="tip"><b>判断技巧：</b>只是"某天突然掉得快"，先看气温和驾驶模式；"这半年一直少跑 100 公里"，才需要考虑电池。</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>多个故障灯同时亮 / 车机黑屏</summary>
+    <div class="body">
+      <div class="label">典型现象</div>
+      <ul>
+        <li>车机黑屏、卡顿，多个故障灯同时亮</li>
+        <li>门锁反应慢、无法解锁、仪表乱闪</li>
+        <li>高压上不去（低压是高压上电的前提）</li>
+      </ul>
+      <div class="label">处理</div>
+      <ul>
+        <li>先尝试搭 12V 电</li>
+        <li>检查 12V 电瓶是否老化（寿命一般 3-5 年）</li>
+      </ul>
+      <div class="tip"><b>这条能省钱：</b>多个故障灯同时亮，优先怀疑 12V 低压，而不是每个部件都坏了。一个电瓶几百块，被误判成"多个模块故障"可能是几千块。</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>动力受限 / 加速无力 / 中途限速</summary>
+    <div class="body">
+      <div class="label">先在路边判断</div>
+      <ul>
+        <li>是否 SOC 极低，触发了低电量保护</li>
+        <li>是否电池或电机温度异常，触发限流（跛行模式）</li>
+        <li>是否刚涉水、报绝缘故障</li>
+        <li>靠边停车、重新上电，看是否恢复</li>
+      </ul>
+      <div class="label warn">如果持续存在</div>
+      <ul>
+        <li>可能是加速踏板传感器、电机三相连接、MCU、高压系统故障</li>
+        <li>需要读 VCU / MCU / BMS 故障码，送修</li>
+      </ul>
+      <div class="tip"><b>注意：</b>跛行模式是保护机制，不是故障本身。车能慢慢开回家，说明系统在保护你，不是马上要报废。</div>
+    </div>
+  </details>
+
+  <details>
+    <summary>异响 / 抖动 / 顿挫</summary>
+    <div class="body">
+      <div class="label">先分辨声音来源</div>
+      <ul>
+        <li><b>减速器啸叫</b>（加速时"呜呜"声，随车速变化）→ 减速器齿轮或油液</li>
+        <li><b>电机高频啸叫</b>（电流声）→ 多为正常电磁噪声，或电机位置传感器异常</li>
+        <li><b>底盘"咯噔"</b> → 悬置、衬套、球头</li>
+        <li><b>刹车"吱吱"</b> → 刹车片磨到极限，或新片未磨合</li>
+        <li><b>行驶中"嗡嗡"随车速增大</b> → 轮胎偏磨、轮毂轴承</li>
+      </ul>
+      <div class="tip"><b>判断技巧：</b>把车升起来空转，声音随车速变、不随挡位变 → 多在轮胎/轴承/减速器；声音随电机转速变 → 多在电机/电控。</div>
+    </div>
+  </details>
+
+  <h2>第二步：手上有故障码？<span>12 个常见码</span></h2>
+
+  <div class="codes" id="codeBtns"></div>
+  <input class="codeInput" id="codeInput" placeholder="输入故障码，例如 P0AA6" autocomplete="off">
+  <div id="codeResult"></div>
+
+  <h2>第三步：这个报价贵不贵<span>五类常见项目</span></h2>
+
+  <details>
+    <summary>看五类典型区间（示例价，不是标准价）</summary>
+    <div class="body" id="quoteBox"></div>
+  </details>
+
+  <details>
+    <summary>五个"报价异常"信号</summary>
+    <div class="body">
+      <ul>
+        <li>不给拆分明细，只报总数</li>
+        <li>不给看旧件</li>
+        <li>说"必须马上换，不然会出事"—— 用恐惧催单</li>
+        <li>拒绝你拍照、拒绝你带走旧件</li>
+        <li>报价明显低于市场（尤其"全新原厂电池包"）—— 低价往往对应翻新、拆机、修复件</li>
+      </ul>
+    </div>
+  </details>
+
+  <h2>第四步：到店照着说这六句</h2>
+  <div class="talk">
+    <p><span class="q">1.</span>"麻烦把配件费和工时费分开列一下，工时按几个小时算？"</p>
+    <p><span class="q">2.</span>"这个件是原厂、品牌还是副厂？质保多久？维修单上能写吗？"</p>
+    <p><span class="q">3.</span>"换下来的旧件我要看一下，可以吗？"</p>
+    <p><span class="q">4.</span>"故障码能当面读一下吗？是当前故障还是历史故障？"</p>
+    <p><span class="q">5.</span>"清码之后如果还复现，是不是说明确实要换？"</p>
+    <p><span class="q">6.</span>"这个项目在别的店大概什么价，你们这个差在哪？"</p>
+  </div>
+  <div class="tip" style="margin-top:12px">这六句话说完，对方基本会重新给你一份更认真的报价。</div>
+
+  <footer>
+    <b>说明：</b>本页内容为技术参考，不替代原厂维修手册和诊断仪，最终以实车检测为准。<br>
+    高压部件（橙色线束、动力电池、电机控制器）请勿自行拆解，带电作业须由持证人员操作。<br>
+    完整版还有故障码全表、三电质保规则、送修清单、十个误区，见同名手册（14 页 PDF）。
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var CODES = [
+    ["P0A01", "电池温度传感器 A 电路", "传感器、线束、插接件", "查阻值、线束通断"],
+    ["P0A0F", "混动启动失败 / 高压供电异常", "电机、控制器、高压回路", "查高压回路与控制器"],
+    ["P0AA1", "主接触器卡在关闭", "接触器粘连、控制电路", "查接触器、预充回路"],
+    ["P0AA6", "电池电压隔离故障（绝缘）", "高压绝缘下降、漏电", "测绝缘电阻、分段排查"],
+    ["P0AC4", "主接触器卡在开启", "接触器、预充、供电", "查接触器、预充电阻"],
+    ["P0AFA", "电池系统电压过低", "亏电、单体异常、接触器", "查 SOC、单体电压"],
+    ["P0B0B", "单体电压异常（厂家定义）", "单体压差、采样故障", "查单体电压、采样线"],
+    ["P0C27", "电机位置传感器", "旋变、线束、MCU", "查旋变阻值与波形"],
+    ["P0D0D", "高压互锁（厂家定义）", "互锁回路、接插件", "查维修开关、互锁回路"],
+    ["P0562", "系统电压过低", "12V 电瓶、DC-DC", "查 12V、DC-DC 输出"],
+    ["U0111", "与 BMS 通讯丢失", "BMS 供电、CAN", "查 BMS 供电、CAN 节点"],
+    ["U0293", "与高压电池管理系统通讯丢失", "BMS、CAN", "查 BMS、CAN 通讯"]
+  ];
+
+  var QUOTES = [
+    ["① 电池包总成更换",
+     "小电池包（30kWh 以下），副厂或拆机包：约 1.2 万–1.6 万<br>全新原厂包：约 2 万以上<br>大电池包（50kWh 以上）：约 2.5 万起",
+     "报 1.8 万换 30kWh 以下的副厂包，偏高一点但不算离谱；报 1.8 万换 50kWh 以上，明显偏低——低价\"全新原厂包\"要警惕泡水修复包、衰减严重的拆机包。"],
+    ["② 单节 / 单模组电芯更换",
+     "常见 500–2000 元/节（含拆装、均衡、密封）",
+     "报 5000 以上换一节，问清楚是不是整个模组一起换。"],
+    ["③ 电池包拆装工时",
+     "常见 1500–3000 元（含拆装、匹配校准、绝缘检测）",
+     "低于 1000 元的\"拆装\"，大概率省掉了绝缘检测和密封复试——这是安全隐患。"],
+    ["④ 电机 / 电控总成",
+     "电机总成常见 8000–20000 元，电控（MCU）常见 5000–15000 元",
+     "报\"电机坏了要换总成\"时，先问是否只是旋变（位置传感器）故障——旋变是几百到一千多的小件。"],
+    ["⑤ OBC 车载充电机",
+     "常见 2000–6000 元",
+     "慢充不工作先确认是不是插座接地问题（免费），再谈换 OBC。"]
+  ];
+
+  var btnBox = document.getElementById("codeBtns");
+  var input = document.getElementById("codeInput");
+  var out = document.getElementById("codeResult");
+
+  CODES.forEach(function (c) {
+    var b = document.createElement("button");
+    b.className = "code-btn";
+    b.textContent = c[0];
+    b.onclick = function () {
+      input.value = c[0];
+      show(c[0]);
+    };
+    btnBox.appendChild(b);
+  });
+
+  function show(raw) {
+    var key = String(raw || "").trim().toUpperCase();
+    if (!key) { out.style.display = "none"; return; }
+    var hit = null;
+    for (var i = 0; i < CODES.length; i++) {
+      if (CODES[i][0] === key) { hit = CODES[i]; break; }
+    }
+    out.style.display = "block";
+    if (!hit) {
+      out.innerHTML =
+        '<div class="r-code">' + key + '</div>' +
+        '<div class="r-row">没有收录这个码。看第一位判断大类：' +
+        '<br>P = 动力总成（三电）　B = 车身　C = 底盘　U = 网络通讯' +
+        '<br>第二位 0 = 通用码，1 = 厂家自定义码（必须查该品牌资料）</div>';
+      return;
+    }
+    out.innerHTML =
+      '<div class="r-code">' + hit[0] + '</div>' +
+      '<div class="r-row"><em>含义</em>' + hit[1] + '</div>' +
+      '<div class="r-row"><em>常见原因</em>' + hit[2] + '</div>' +
+      '<div class="r-row"><em>排查方向</em>' + hit[3] + '</div>' +
+      '<div class="r-row" style="color:#6b7785;font-size:13px">同一码在不同品牌定义可能不同，最终以原厂诊断仪和维修手册为准。</div>';
+  }
+
+  input.addEventListener("input", function () { show(input.value); });
+
+  var qb = document.getElementById("quoteBox");
+  QUOTES.forEach(function (q) {
+    var d = document.createElement("div");
+    d.className = "quote-item";
+    d.innerHTML = "<b>" + q[0] + "</b><br>" + q[1] +
+      '<div style="margin-top:6px;font-size:14px;color:#b5451b">判断：' + q[2] + "</div>";
+    qb.appendChild(d);
+  });
+})();
+
+/* ===== 本地问答：关键词匹配，不联网、不发请求 ===== */
+(function () {
+  var QA = [
+    { k: ["续航", "掉电", "跑不远", "掉得快", "衰减", "少跑", "公里数"], t: "续航突然下降，先别急着怀疑电池",
+      b: "先排除这些：气温低（冬季打折，回暖恢复）；空调暖风座椅加热；胎压偏低、制动拖滞；驾驶模式或能量回收改了；频繁急加速、长时间高速；表显口径切换（动态续航和 CLTC 差别很大）；停放时开了哨兵模式或电池预热。<br><br>需要查电池的情况：满电续航比新车<b>持续、明显</b>下降；到店读 SOH 和电芯压差。",
+      n: "只是“某天突然掉得快”，先看气温和驾驶模式；“这半年一直少跑 100 公里”，才需要考虑电池。" },
+    { k: ["充不进", "充不上", "充电慢", "充不了", "充电", "快充", "慢充", "充不满"], t: "充不进电 / 充电慢，八成不是硬件",
+      b: "先排除：枪没插到底、电子锁没锁止；公共快充高峰被分流；电池过冷先预热、过热限流；SOC 高了功率自然低（80% 以后变慢是保护）；慢充先查插座有没有接地；换一个桩再试；800V 车在普通桩跑不到峰值。<br><br>可能硬件：OBC、充电口温度传感器、CC/CP 信号、BMS 充电策略、快充回路。",
+      n: "判断技巧：慢充不行、快充正常 → 大概率 OBC；快充不行、慢充正常 → 大概率快充回路或桩的问题。" },
+    { k: ["上不了电", "打不着", "启动不了", "READY", "不上电", "无法启动", "动力系统故障"], t: "上不了电，先做这几件事",
+      b: "钥匙在车内且电量正常；P 挡；拔掉充电枪；锁车等 3-5 分钟再上电；车机不亮或门锁迟钝优先查 12V；确认车门、前备箱、后备箱关好。<br><br>都正常还上不了高压，可能是绝缘故障、高压互锁、预充或主接触器、BMS/VCU。",
+      n: "必须送修，不要反复尝试上电，会扩大故障范围。" },
+    { k: ["故障灯", "灯全亮", "多个灯", "仪表黑屏", "车机黑屏", "一堆灯"], t: "多个故障灯同时亮，先怀疑 12V",
+      b: "典型：车机黑屏卡顿、多灯同亮、门锁反应慢、高压上不去。<br><br>先搭 12V 电，检查电瓶是否老化（寿命一般 3-5 年）。",
+      n: "这条能省钱：一个电瓶几百块，被误判成“多个模块故障”可能是几千块。" },
+    { k: ["动力受限", "加速无力", "限速", "跛行", "没劲", "跑不快"], t: "动力受限是保护，不是报废",
+      b: "先判断：SOC 极低触发低电量保护；电池或电机温度异常触发限流；刚涉水报绝缘。<br>靠边停车重新上电，看是否恢复。<br><br>持续存在可能是踏板传感器、电机三相连接、MCU、高压系统故障。",
+      n: "跛行模式能让你慢慢开回家，说明系统在保护你，不是马上要报废。" },
+    { k: ["异响", "嗡嗡", "咯噔", "吱吱", "啸叫", "抖动", "顿挫", "声音"], t: "异响先分清是哪一类",
+      b: "减速器啸叫（加速“呜呜”，随车速变）→ 减速器齿轮或油液；电机高频啸叫（电流声）→ 多为正常电磁噪声；底盘“咯噔”→ 悬置、衬套、球头；刹车“吱吱”→ 刹车片到极限；行驶“嗡嗡”随车速增大 → 轮胎偏磨、轮毂轴承。",
+      n: "升起来空转：随车速变 → 轮胎/轴承/减速器；随电机转速变 → 电机/电控。" },
+    { k: ["报价", "贵不贵", "被坑", "宰", "多少钱", "价格", "合理", "太贵", "便宜"], t: "判断报价，先看它拆没拆开",
+      b: "正常报价单拆四块：配件费、工时费、辅料费、其他（检测、拖车）。<b>只给一个总数、说不清这四块，先别签字。</b><br><br>工时费：4S 常见 200-500 元/小时，综合修理厂 80-200 元/小时。问“这个项目算几个工时”。",
+      n: "下面“报价算一算”可以直接填金额判断。" },
+    { k: ["换电池", "电池包", "电池坏了", "换总成", "电池多少钱"], t: "报价说换电池包，先问三件事",
+      b: "① 整包换还是换单模组？<br>② 原厂全新、副厂还是拆机件？<br>③ 质保多久，能不能写进维修单？<br><br>示例区间：30kWh 以下副厂/拆机包约 1.2-1.6 万；全新原厂约 2 万以上；50kWh 以上约 2.5 万起。",
+      n: "车还在三电质保期内，任何“要换电池包”的报价，先走官方申请检测，再谈钱。" },
+    { k: ["电芯", "模组", "单节", "单体", "压差"], t: "换单节电芯，常见 500-2000 元/节",
+      b: "含拆装、均衡、密封。<br>报 5000 以上换一节，问清楚是不是整个模组一起换。<br><br>电芯压差过大（一致性差）会让可用容量变少，需要诊断仪读。",
+      n: "电池包要换不等于只能换，单体压差、单模组故障可以先修。" },
+    { k: ["质保", "保修", "三电质保", "保修期", "免费换"], t: "三电质保有单独的、更长的期限",
+      b: "多数品牌 8 年 / 15 万公里左右，部分对非营运首任车主更长（有的宣传终身），以你的保修手册为准。<br><br>会掉质保的行为：营运使用、私自改装三电、事故涉水后不按规范修、未按期保养、私自拆电池包。",
+      n: "质保期内报故障，优先走官方渠道，别先去外面拆——一旦被认定私自拆解，可能失去质保。" },
+    { k: ["绝缘", "漏电", "涉水", "泡水", "进水", "绝缘故障"], t: "绝缘故障别自己碰",
+      b: "高压漏电，常见于涉水后。对应故障码多为 P0AA6。<br>排查要测各高压部件绝缘电阻，分段隔离。",
+      n: "橙色线束、动力电池、电机控制器不要自行拆解，带电作业必须持证。" },
+    { k: ["12V", "小电瓶", "低压", "电瓶", "搭电"], t: "12V 小电瓶是很多怪病的原因",
+      b: "车机黑屏、门锁迟钝、仪表乱闪、多灯同亮、高压上不去，都可能是它。<br>寿命一般 3-5 年。",
+      n: "先搭电试，能恢复就基本锁定电瓶，别急着换模块。" },
+    { k: ["OBC", "充电机", "车载充电"], t: "OBC 是慢充失效最常见的件",
+      b: "常见 2000-6000 元。<br>判断：慢充不行、快充正常 → 大概率 OBC。",
+      n: "先确认插座接地（免费），再谈换 OBC。" },
+    { k: ["旋变", "电机坏", "电机故障", "换电机", "位置传感器"], t: "说电机坏了，先问是不是旋变",
+      b: "旋变（位置传感器）是几百到一千多的小件，对应故障码常见 P0C27。<br>电机总成常见 8000-20000 元，电控 MCU 常见 5000-15000 元。",
+      n: "“电机故障 = 换电机”是误区，多数是旋变、线束、控制器。" },
+    { k: ["冬天", "低温", "零下", "冬季", "天冷"], t: "冬天续航打折是物理，不是故障",
+      b: "低温电池活性下降，续航打折，回暖会恢复。<br>暖风、座椅加热、电池预热保温都会额外耗电。",
+      n: "如果夏天也明显掉，才需要查 SOH 和压差。" },
+    { k: ["清码", "清除故障码", "消码", "复位"], t: "清码不等于修好",
+      b: "清码只是清记录，故障还在就会复现。",
+      n: "到店要求当面读码，并问“是当前故障还是历史故障”。" },
+    { k: ["原厂件", "副厂件", "拆车件", "品牌件", "配件", "翻新"], t: "四种件，价差能到三倍",
+      b: "原厂件最贵（通常质保 1 年 / 2 万公里）；品牌件是原厂 60-80%；副厂件 30-60%；拆车件/翻新件最低，多数无质保。<br><br>怎么确认是原厂：看包装、标签、批次号并拍照；维修单写明“原厂件”和质保期。",
+      n: "对方拒绝让你看旧件，这个件很可能没换。" },
+    { k: ["工时", "工时费", "几个工时", "人工费"], t: "工时费问一句话就够",
+      b: "问“这个项目算几个工时？”<br>正规报价会写“更换 XX，工时 2.5 小时”。只写“工时费 800 元”的，问清按几小时算。",
+      n: "异常信号：工时数比常规多 2 倍还说不出理由；有“综合检测费”却没做检测。" },
+    { k: ["4S", "修理厂", "去哪修", "外面修", "专修"], t: "质保期内 4S 反而可能更省",
+      b: "质保期内三电故障，4S 可能免费；外面修一旦被认定私自拆解，可能失去质保。<br>过保后，专修店和三电专修往往比 4S 便宜且更熟。",
+      n: "先确认车还在不在三电质保期。" },
+    { k: ["能不能开", "敢不敢开", "拖车", "继续开", "安全"], t: "这几种情况别硬开",
+      b: "报绝缘故障、涉水后、动力电池异味或冒烟、底盘磕碰后 —— 停车等拖车。<br>跛行模式（限速但能走）可以低速就近到店。",
+      n: "拿不准就停，拖车费远低于二次损坏。" },
+    { k: ["二手", "买二手", "验车", "车况"], t: "买二手新能源，重点查三样",
+      b: "电池 SOH 和压差（要读诊断仪数据，不看表显）；是否营运车（影响质保）；有没有私自改装三电、事故或涉水记录。",
+      n: "让卖家陪你到第三方或 4S 读一次电池数据，检测费几十到一百多。" },
+    { k: ["保养", "多久保养", "保养项目"], t: "电车保养简单，但别漏这几项",
+      b: "常规：空调滤、刹车油、冷却液、减速器油（按里程）、轮胎与四轮定位。<br>三电本身不需要“保养”，任何让你做“电池养护”“电瓶激活”的加项，先问依据。",
+      n: "未按期保养可能影响质保，按手册来。" }
+  ];
+
+  var CHIPS = ["续航掉了", "充不进电", "上不了电", "多灯全亮", "报价贵不贵", "换电池", "质保", "异响"];
+
+  var input = document.getElementById("askInput");
+  var out = document.getElementById("askResult");
+  var chipBox = document.getElementById("askChips");
+
+  CHIPS.forEach(function (c) {
+    var b = document.createElement("button");
+    b.className = "askChip";
+    b.textContent = c;
+    b.onclick = function () { input.value = c; ask(c); };
+    chipBox.appendChild(b);
+  });
+
+  function ask(text) {
+    var s = String(text || "").trim();
+    if (!s) { out.style.display = "none"; return; }
+
+    // 直接给了故障码 → 交给上面的码表
+    var code = s.toUpperCase().match(/[PBCU][0-9A-F]{4}/);
+    if (code) {
+      var ci = document.getElementById("codeInput");
+      var cr = document.getElementById("codeResult");
+      if (ci && cr) {
+        ci.value = code[0];
+        ci.dispatchEvent(new Event("input"));
+        out.style.display = "block";
+        out.innerHTML = '<div class="a-title">这是故障码 ' + code[0] + '</div>' +
+          '<div class="a-body">已在上面的“第二步”里解析。往下滑看结果。</div>';
+        ci.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+    }
+
+    var best = null, bestScore = 0;
+    var low = s.toLowerCase();
+    for (var i = 0; i < QA.length; i++) {
+      var sc = 0;
+      for (var j = 0; j < QA[i].k.length; j++) {
+        if (low.indexOf(QA[i].k[j].toLowerCase()) >= 0) sc++;
+      }
+      if (sc > bestScore) { bestScore = sc; best = QA[i]; }
+    }
+
+    out.style.display = "block";
+    if (!best) {
+      out.innerHTML = '<div class="a-title">没找到对应条目</div>' +
+        '<div class="a-body">换个说法试试，或者往下用六种现象自查：上不了电 / 充不进电 / 续航下降 / 多灯全亮 / 动力受限 / 异响。</div>';
+      return;
+    }
+    out.innerHTML = '<div class="a-title">' + best.t + '</div>' +
+      '<div class="a-body">' + best.b + '</div>' +
+      '<div class="a-next">下一步：' + best.n + '</div>';
+  }
+
+  input.addEventListener("input", function () { ask(input.value); });
+})();
+
+/* ===== 报价计算 ===== */
+(function () {
+  var CALC = [
+    ["电池包总成（30kWh 以下，副厂/拆机）", 12000, 16000,
+     "低于 1.2 万，问清楚是不是泡水修复包或衰减严重的拆机包；高于 1.6 万，要求拆分明细，并确认是整包换还是只换模组。"],
+    ["电池包总成（全新原厂）", 20000, 40000,
+     "低于 2 万的“全新原厂包”要警惕——很可能是翻新、拆机或泡水修复件。要求看包装批次号，并写进维修单。"],
+    ["电池包总成（50kWh 以上）", 25000, 60000,
+     "明显低于 2.5 万的整包报价，先确认是不是拆机包，或者只是换了其中几个模组。"],
+    ["单节 / 单模组电芯", 500, 2000,
+     "报 5000 以上换一节，问清楚是不是整个模组一起换；低于 500 要确认有没有做均衡和密封。"],
+    ["电池包拆装工时", 1500, 3000,
+     "低于 1000 元的“拆装”，大概率省掉了绝缘检测和密封复试——这是安全隐患，不是省钱。"],
+    ["电机总成", 8000, 20000,
+     "先问是不是只是旋变（位置传感器）故障——旋变是几百到一千多的小件，不该按总成报价。"],
+    ["电控（MCU）", 5000, 15000,
+     "要求写明是换总成还是修板。修板价格应在总成的一半以下。"],
+    ["OBC 车载充电机", 2000, 6000,
+     "先确认插座接地问题（免费），再谈换 OBC。慢充不行快充正常才更像 OBC。"]
+  ];
+
+  var sel = document.getElementById("calcItem");
+  var price = document.getElementById("calcPrice");
+  var btn = document.getElementById("calcBtn");
+  var out = document.getElementById("calcResult");
+
+  CALC.forEach(function (c, i) {
+    var o = document.createElement("option");
+    o.value = i;
+    o.textContent = c[0];
+    sel.appendChild(o);
+  });
+
+  function fmt(n) {
+    return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  function run() {
+    var i = parseInt(sel.value, 10);
+    var c = CALC[i];
+    var v = Number(String(price.value).replace(/[^\d.]/g, ""));
+    out.style.display = "block";
+
+    if (!v || v <= 0) {
+      out.innerHTML = "先填对方报的金额（元）。";
+      return;
+    }
+
+    var lo = c[1], hi = c[2];
+    var verdict, color;
+    if (v < lo) {
+      verdict = "低于常见区间下限";
+      color = "#b5451b";
+    } else if (v > hi) {
+      verdict = "高于常见区间上限";
+      color = "#b5451b";
+    } else {
+      verdict = "在常见区间内";
+      color = "#0f4c75";
+    }
+
+    out.innerHTML =
+      '<div style="font-size:17px;font-weight:700;color:' + color + '">' + verdict + '</div>' +
+      '<div style="margin-top:8px">你填的是 <b>' + fmt(v) + ' 元</b>；' + c[0] + '的常见区间约 <b>' + fmt(lo) + ' – ' + fmt(hi) + ' 元</b>。</div>' +
+      '<div style="margin-top:8px;color:#24405a">' +
+        ((v >= lo && v <= hi)
+          ? "价格量级正常，但这不代表没问题——要求配件费和工时费分开列，问清是原厂、副厂还是拆机件，并当面看换下来的旧件。"
+          : c[3]) +
+      '</div>' +
+      '<div style="margin-top:10px;font-size:13px;color:#6b7785">示例区间，用来判断量级，不是标准价。不同车型、不同城市差异很大，最终以实际项目和配件品质为准。</div>';
+  }
+
+  btn.addEventListener("click", run);
+  price.addEventListener("keydown", function (e) { if (e.key === "Enter") run(); });
+})();
+</script>
+</body>
+</html>
